@@ -1,0 +1,18 @@
+---
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Budapest
+    volumes:
+      - /home/adam/radarr:/config
+      - /mnt/poolmedia/Movies:/movies
+      - /mnt/poolmedia/downloads:/downloads
+    ports:
+      - 7878:7878
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: unless-stopped

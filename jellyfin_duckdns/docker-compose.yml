@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  duckdns:
+    image: linuxserver/duckdns
+    container_name: duckdns
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Budapest
+      - SUBDOMAINS=#SAJATSUBDOMAIN#
+      - TOKEN=#SAJATTOCKEN#
+    networks:
+      - traefik-public
+
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    ports:
+      - "8096:8096"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Budapest
+    volumes:
+      - /home/adam/jellyfinconfig:/config
+      - /mnt/poolmedia/Series:/tv
+      - /mnt/poolmedia/Movies:/movies
+      - /mnt/akoshere/Filmek:/akosheremovies
+      - /mnt/akoshere/Sorozatok:/akoshereseries
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(\"afserv.duckdns.org\")"
+      - "traefik.http.routers.jellyfin.entrypoints=websecure"
+      - "traefik.http.routers.jellyfin.tls.certresolver=letsencrypt"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true
