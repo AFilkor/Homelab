@@ -1,0 +1,31 @@
+
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8090:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/adam/traefik/traefik.yml:/etc/traefik/traefik.yml
+      - /home/adam/traefik/letsencrypt:/letsencrypt
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`dashboard.sub.domain.com`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
+    environment:
+      - DUCKDNS_TOKEN=tokenhere
+     
+networks:
+  traefik-public:
+    external: true
