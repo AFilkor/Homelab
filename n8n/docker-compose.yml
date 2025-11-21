@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  n8n:
+    image: n8nio/n8n
+    container_name: n8n
+    restart: unless-stopped
+    environment:
+      - N8N_HOST=sub.domain.hu
+      - N8N_PROTOCOL=https
+      - N8N_FORCE_BASE_URL=https://sub.domain.hu/
+      - WEBHOOK_URL=https://sub.domain.hu/
+      - NODE_ENV=production
+      - TZ=Europe/Budapest
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`sub.domain.hu`)"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls=true"
+      - "traefik.http.routers.n8n.tls.certresolver=letsencrypt"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+      - "traefik.http.middlewares.n8n-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.n8n-headers.headers.customrequestheaders.X-Forwarded-Port=443"
+      - "traefik.http.middlewares.n8n-headers.headers.customrequestheaders.X-Forwarded-Host=sub.domain.hu"
+      - "traefik.http.routers.n8n.middlewares=n8n-headers"
+
+volumes:
+  n8n_data:
+
+networks:
+  traefik-public:
+    external: true

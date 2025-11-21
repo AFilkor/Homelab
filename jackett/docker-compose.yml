@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Budapest
+      - AUTO_UPDATE=true
+    volumes:
+      - /home/adam/jackett:/config
+    ports:
+      - 9117:9117
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: unless-stopped
