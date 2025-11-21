@@ -1,0 +1,15 @@
+services:
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Budapest
+    volumes:
+      - /home/adam/overseerr:/config
+    ports:
+      - 5055:5055
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: unless-stopped
