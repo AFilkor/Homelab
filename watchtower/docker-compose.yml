@@ -1,0 +1,22 @@
+version: "3"
+services:
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    environment:
+      - TZ=Europe/Budapest
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_INCLUDE_RESTARTING=true
+        #- WATCHTOWER_POLL_INTERVAL=30
+      - WATCHTOWER_SCHEDULE=0 0 3 * * * #sec min hour day_of_month month day_of_week
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+        #command:
+      #--interval 86400
+      #--schedule "0 * * * * *"
+      #--cleanup true
+      #--label-enable
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: always 
